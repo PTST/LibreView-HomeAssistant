@@ -1,4 +1,5 @@
 """Constants for the LibreView integration."""
+
 from datetime import timedelta
 import logging
 

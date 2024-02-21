@@ -1,4 +1,5 @@
 """Config flow for LibreView integration."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -95,7 +96,9 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         if user_input is not None:
-            alarm = Alarm(username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD])
+            alarm = Alarm(
+                username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
+            )
             try:
                 await self.hass.async_add_executor_job(alarm.update_status)
             except Exception as ex:
