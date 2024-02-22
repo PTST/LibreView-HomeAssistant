@@ -77,7 +77,7 @@ Then proceed to Home Assistant for the setup of the integration there.
 6. Select your preferred unit of measurement and click submit  
 ![IMG_0649](https://github.com/PTST/LibreView-HomeAssistant/assets/17211264/002eee8d-f50c-44fe-8717-83cbb3e256c8)
 
-7. Click finish
+7. Click finish  
 ![IMG_0650](https://github.com/PTST/LibreView-HomeAssistant/assets/17211264/78e46354-af44-483a-aa03-5e7eb3fad2d2)
 
 8. You now have a new sensor for each person who shares their glucose measurements with you.  
