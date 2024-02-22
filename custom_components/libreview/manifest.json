@@ -1,12 +1,12 @@
 {
     "domain": "libreview",
     "name": "LibreView",
-    "documentation": "https://github.com/PTST/LibreView-HomeAssistant",
-    "issue_tracker": "https://github.com/PTST/LibreView-HomeAssistant/issues",
-    "requirements": ["LibreView==0.1.2"],
-    "dependencies": [],
     "codeowners": ["@PTST"],
     "config_flow": true,
+    "dependencies": [],
+    "documentation": "https://github.com/PTST/LibreView-HomeAssistant",
     "iot_class": "cloud_polling",
+    "issue_tracker": "https://github.com/PTST/LibreView-HomeAssistant/issues",
+    "requirements": ["LibreView==0.1.2"],
     "version": "1.0.0"
 }
