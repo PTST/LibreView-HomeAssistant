@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any
-
+from typing import Any, List
+from uuid import UUID
 import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
 
-from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
+from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
@@ -17,6 +18,8 @@ from .const import (
     LOGGER,
 )
 
+from LibreView import LibreView
+
 
 class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for LibreView."""
@@ -26,6 +29,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     email: str
     entry: ConfigEntry
     password: str
+    connections: Dict[str, str]
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -36,15 +40,21 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 # instantiate LibeView and login
-                # libre = ...
-                await self.hass.async_add_executor_job(libre)
+                libre = LibreView(username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD])
+                await self.hass.async_add_executor_job(libre.get_connections)
             except Exception as ex:
                 LOGGER.debug("Could not log in to LibreView, %s", ex)
                 errors["base"] = "invalid_auth"
             else:
                 self.email = user_input[CONF_EMAIL]
                 self.password = user_input[CONF_PASSWORD]
-                return await self.async_step_installation()
+                return self.async_create_entry(
+                    title="LibreView",
+                    data={
+                        CONF_EMAIL: self.email,
+                        CONF_PASSWORD: self.password,
+                    },
+                )
 
         return self.async_show_form(
             step_id="user",
@@ -55,33 +65,6 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=errors,
-        )
-
-    async def async_step_installation(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Select LibreView users to add."""
-        if len(self.installations) == 1:
-            user_input = {CONF_GIID: list(self.installations)[0]}
-
-        if user_input is None:
-            return self.async_show_form(
-                step_id="installation",
-                data_schema=vol.Schema(
-                    {vol.Required(CONF_GIID): vol.In(self.installations)}
-                ),
-            )
-
-        await self.async_set_unique_id(user_input[CONF_GIID])
-        self._abort_if_unique_id_configured()
-
-        return self.async_create_entry(
-            title=self.installations[user_input[CONF_GIID]],
-            data={
-                CONF_EMAIL: self.email,
-                CONF_PASSWORD: self.password,
-                CONF_GIID: user_input[CONF_GIID],
-            },
         )
 
     async def async_step_reauth(self, data: dict[str, Any]) -> FlowResult:

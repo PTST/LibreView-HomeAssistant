@@ -3,7 +3,7 @@
     "name": "LibreView",
     "documentation": "https://github.com/PTST/LibreView-HomeAssistant",
     "issue_tracker": "https://github.com/PTST/LibreView-HomeAssistant/issues",
-    "requirements": ["LibreView==0.0.5"],
+    "requirements": ["LibreView==0.1.2"],
     "dependencies": [],
     "codeowners": ["@PTST"],
     "config_flow": true,
