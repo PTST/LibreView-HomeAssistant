@@ -1,22 +1,16 @@
 """Config flow for LibreView integration."""
 
 from typing import Any, Dict
-import voluptuous as vol
 
+import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
-
-from .const import (
-    CONF_GIID,
-    DOMAIN,
-    LOGGER,
-    CONF_UOM,
-    GlucoseUnitOfMeasurement,
-)
-
 from LibreView import LibreView
+
+from .const import CONF_UOM, DOMAIN, LOGGER, GlucoseUnitOfMeasurement
+
 
 class LibreViewOptionsFlowHandler(OptionsFlow):
     def __init__(self, entry: ConfigEntry) -> None:
@@ -44,9 +38,14 @@ class LibreViewOptionsFlowHandler(OptionsFlow):
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
-                {vol.Required(CONF_UOM, default=default): vol.In(GlucoseUnitOfMeasurement)}
+                {
+                    vol.Required(CONF_UOM, default=default): vol.In(
+                        GlucoseUnitOfMeasurement
+                    )
+                }
             ),
         )
+
 
 class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for LibreView."""
@@ -78,7 +77,6 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                 self.email = user_input[CONF_EMAIL]
                 self.password = user_input[CONF_PASSWORD]
                 return await self.async_step_options()
-                
 
         return self.async_show_form(
             step_id="user",
@@ -91,24 +89,25 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_options(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+    async def async_step_options(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
         if user_input is not None:
             self.uom = user_input[CONF_UOM]
             return self.async_create_entry(
-                        title="LibreView",
-                        data={
-                            CONF_EMAIL: self.email,
-                            CONF_PASSWORD: self.password,
-                            CONF_UOM: self.uom
-                        },
-                    )
+                title="LibreView",
+                data={
+                    CONF_EMAIL: self.email,
+                    CONF_PASSWORD: self.password,
+                    CONF_UOM: self.uom,
+                },
+            )
         return self.async_show_form(
             step_id="options",
             data_schema=vol.Schema(
                 {vol.Required(CONF_UOM): vol.In(GlucoseUnitOfMeasurement)}
             ),
         )
-
 
     async def async_step_reauth(self, data: dict[str, Any]) -> FlowResult:
         """Handle initiation of re-authentication with LibreView."""

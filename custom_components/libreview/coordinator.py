@@ -1,14 +1,10 @@
 from homeassistant.config_entries import ConfigEntry
-from LibreView import LibreView
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from LibreView import LibreView
 
-from .const import (
-    DEFAULT_SCAN_INTERVAL,
-    DOMAIN,
-    LOGGER,
-)
+from .const import DEFAULT_SCAN_INTERVAL, DOMAIN, LOGGER
 
 
 class LibreViewCoordinator(DataUpdateCoordinator):

@@ -1,9 +1,10 @@
-from .coordinator import LibreViewCoordinator
-from .const import DOMAIN, LOGGER
+import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-import homeassistant.helpers.config_validation as cv
+
+from .const import DOMAIN, LOGGER
+from .coordinator import LibreViewCoordinator
 
 PLATFORMS = [
     SENSOR_DOMAIN,

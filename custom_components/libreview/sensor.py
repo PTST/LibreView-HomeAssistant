@@ -1,24 +1,26 @@
+from typing import Dict
+from uuid import UUID
+
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from .const import DOMAIN, LOGGER, GlucoseUnitOfMeasurement, CONF_UOM
-from homeassistant.components.sensor import (
-    SensorEntity,
-)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
-
-from uuid import UUID
-from .coordinator import LibreViewCoordinator
-from LibreView.models import Connection, GlucoseMeasurement
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from typing import Dict
+from LibreView.models import Connection, GlucoseMeasurement
+
+from .const import CONF_UOM, DOMAIN, GlucoseUnitOfMeasurement
+from .coordinator import LibreViewCoordinator
+
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     coordinator: LibreViewCoordinator = hass.data[DOMAIN][entry.entry_id]
     sensors: list[Entity] = [
-        GlucoseSensor(coordinator, connection_id, GlucoseUnitOfMeasurement(entry.data[CONF_UOM]))
+        GlucoseSensor(
+            coordinator, connection_id, GlucoseUnitOfMeasurement(entry.data[CONF_UOM])
+        )
         for connection_id, _ in coordinator.data["glucose_readings"].items()
     ]
 
@@ -66,4 +68,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
 
     @property
     def extra_state_attributes(self) -> Dict[str, int | float]:
-        return {GlucoseUnitOfMeasurement.MMOLL.value: self.gcm.value, GlucoseUnitOfMeasurement.MGDL.value: self.gcm.value_in_mg_per_dl}
+        return {
+            GlucoseUnitOfMeasurement.MMOLL.value: self.gcm.value,
+            GlucoseUnitOfMeasurement.MGDL.value: self.gcm.value_in_mg_per_dl,
+        }
