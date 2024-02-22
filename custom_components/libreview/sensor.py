@@ -29,6 +29,7 @@ async def async_setup_entry(
 
 class GlucoseSensor(CoordinatorEntity, SensorEntity):
     _attr_native_unit_of_measurement: str
+    _attr_state_class = "measurement"
     uom: GlucoseUnitOfMeasurement
 
     def __init__(
@@ -42,6 +43,11 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
         self.connection_id = connection_id
         self.uom = uom
         self._attr_native_unit_of_measurement = self.uom.value
+
+    @property
+    def icon(self):
+        # trend icons?
+        return "mdi:diabetes"
 
     @property
     def connection(self) -> Connection:
