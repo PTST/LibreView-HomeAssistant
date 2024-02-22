@@ -1,5 +1,5 @@
 from .coordinator import LibreViewCoordinator
-from .const import DOMAIN
+from .const import DOMAIN, LOGGER
 from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -22,6 +22,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Set up all platforms for this device/entry.
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
+        LOGGER.error("config options were changed")
+        await hass.config_entries.async_reload(entry.entry_id)
+
+    entry.async_on_unload(entry.add_update_listener(update_listener))
 
     return True
 

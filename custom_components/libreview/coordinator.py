@@ -32,6 +32,7 @@ class LibreViewCoordinator(DataUpdateCoordinator):
             raise
 
         # Store data in a way Home Assistant can easily consume it
-        return {
+        data = {
             "glucose_readings": self.libre.connections_dict,
         }
+        return data
