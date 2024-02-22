@@ -1,11 +1,7 @@
 """Config flow for LibreView integration."""
 
-from __future__ import annotations
-
-from typing import Any, List
-from uuid import UUID
+from typing import Any, Dict
 import voluptuous as vol
-import homeassistant.helpers.config_validation as cv
 
 from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
@@ -40,7 +36,9 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 # instantiate LibeView and login
-                libre = LibreView(username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD])
+                libre = LibreView(
+                    username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
+                )
                 await self.hass.async_add_executor_job(libre.get_connections)
             except Exception as ex:
                 LOGGER.debug("Could not log in to LibreView, %s", ex)
@@ -79,11 +77,12 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
 
         if user_input is not None:
-            alarm = Alarm(
-                username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
-            )
             try:
-                await self.hass.async_add_executor_job(alarm.update_status)
+                # instantiate LibeView and login
+                libre = LibreView(
+                    username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
+                )
+                await self.hass.async_add_executor_job(libre.get_connections)
             except Exception as ex:
                 LOGGER.debug("Could not log in to LibreView, %s", ex)
                 errors["base"] = "invalid_auth"
