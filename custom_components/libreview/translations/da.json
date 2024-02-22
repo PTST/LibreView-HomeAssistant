@@ -1,0 +1,47 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "LibreView opsætning",
+                "description": "Log på med din LibreView / LibreLinkUp konto.",
+                "data": {
+                    "email": "Email",
+                    "password": "Password"
+                }
+            },
+            "options": {
+                "title": "LibreView opsætning",
+                "description": "Vælg din foretrukne målenhed for blodsukkermålinger",
+                "data": {
+                    "uom": "Enhed"
+                }
+            },
+            "reauth_confirm": {
+                "description": "Log på igen med din LibreView / LibreLinkUp konto.",
+                "data": {
+                    "email": "Email",
+                    "password": "Password"
+                }
+            }
+        },
+        "error": {
+            "invalid_auth": "Ugyldige logininformationer",
+            "unknown": "Ukendt fejl"
+        },
+        "abort": {
+            "already_configured": "Konto er allerede konfigureret",
+            "reauth_successful": "Genpålogning gennemført succesfuldt"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "LibreView indstillinger",
+                "description": "Vælg din foretrukne målenhed for blodsukkermålinger",
+                "data": {
+                    "uom": "Enhed"
+                }
+            }
+        }
+    }
+}

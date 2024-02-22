@@ -1,0 +1,47 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "LibreView Configuration",
+                "description": "Sign-in with your LibreView / LibreLinkUp account.",
+                "data": {
+                    "email": "Email",
+                    "password": "Password"
+                }
+            },
+            "options": {
+                "title": "LibreView Configuration",
+                "description": "Please select your preffered unit of measurent for blood glucose measurements",
+                "data": {
+                    "uom": "Unit"
+                }
+            },
+            "reauth_confirm": {
+                "description": "Re-authenticate with your LibreView / LibreLinkUp account.",
+                "data": {
+                    "email": "Email",
+                    "password": "Password"
+                }
+            }
+        },
+        "error": {
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unexpected error"
+        },
+        "abort": {
+            "already_configured": "Account is already configured",
+            "reauth_successful": "Re-authentication was successful"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "LibreView Options",
+                "description": "Please select your preffered unit of measurent for blood glucose measurements",
+                "data": {
+                    "uom": "Unit"
+                }
+            }
+        }
+    }
+}

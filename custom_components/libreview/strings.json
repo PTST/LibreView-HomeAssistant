@@ -2,21 +2,22 @@
     "config": {
         "step": {
             "user": {
+                "title": "LibreView Configuration",
+                "description": "Sign-in with your LibreView / LibreLinkUp account.",
                 "data": {
-                    "description": "Sign-in with your LibreView / LibreLinkUp account.",
                     "email": "[%key:common::config_flow::data::email%]",
                     "password": "[%key:common::config_flow::data::password%]"
                 }
             },
-            "installation": {
-                "description": "Home Assistant found persons in your LibreView / LibreLinkUp account. Please, select the person(s) to add to Home Assistant.",
+            "async_step_options": {
+                "description": "Please select your preffered unit of measurent for blood glucose measurements",
                 "data": {
-                    "giid": "Person"
+                    "uom": "Unit"
                 }
             },
             "reauth_confirm": {
+                "description": "Re-authenticate with your LibreView / LibreLinkUp account.",
                 "data": {
-                    "description": "Re-authenticate with your LibreView / LibreLinkUp account.",
                     "email": "[%key:common::config_flow::data::email%]",
                     "password": "[%key:common::config_flow::data::password%]"
                 }
