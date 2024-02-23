@@ -5,7 +5,10 @@
 
 # LibreView Integration for Home Assistant
 
-Will add a sensor per connected person showing their last reported blood glucose levels in either mmol/L or mg/dL
+Will add a sensor per connected person showing their last reported blood glucose levels in either mmol/L or mg/dL  
+Supports Home Assistant statistics  
+![Screenshot 2024-02-23 083043](https://github.com/PTST/LibreView-HomeAssistant/assets/17211264/2112507b-bd45-4f4b-aace-f043eb0121c2)
+
 
 ## Installation
 ### HACS (Recommended)
