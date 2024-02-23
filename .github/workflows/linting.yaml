@@ -1,4 +1,4 @@
-name: Black Formatting Validation
+name: Linting
 
 on:
   push:
@@ -13,13 +13,13 @@ on:
 
 
 jobs:
-  black-format:
+  black-formatted:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: psf/black@stable
   
-  py-lint:
+  py-linted:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
