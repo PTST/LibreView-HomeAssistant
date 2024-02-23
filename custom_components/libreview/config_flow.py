@@ -39,7 +39,7 @@ class LibreViewOptionsFlowHandler(OptionsFlow):
         if self.entry.data.get(CONF_SENSOR_DURATION) is not None:
             default_duration = int(self.entry.data.get(CONF_SENSOR_DURATION))
 
-        default_show_trend = 14
+        default_show_trend = False
         if self.entry.data.get(CONF_SHOW_TREND_ARROW) is not None:
             default_show_trend = bool(self.entry.data.get(CONF_SHOW_TREND_ARROW))
 
@@ -121,7 +121,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(
                 {vol.Required(CONF_UOM): vol.In(GlucoseUnitOfMeasurement),
                 vol.Required(CONF_SENSOR_DURATION, default=14): int,
-                vol.Required(CONF_SHOW_TREND_ARROW, default=default_show_trend): bool},
+                vol.Required(CONF_SHOW_TREND_ARROW, default=False): bool},
             ),
         )
 

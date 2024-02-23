@@ -111,7 +111,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
     def name(self) -> str:
         """Return the name of the entity."""
         name = f"{self.connection.first_name } {self.connection.last_name}"
-        return f"{name} Glucose Measurement"
+        return f"{name} glucose level"
 
     @property
     def native_value(self) -> int | float | None:
