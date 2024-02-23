@@ -1,0 +1,3 @@
+[TYPECHECK]
+ignored-modules=voluptuous,homeassistant,LibreView
+disable=missing-docstring,too-few-public-methods

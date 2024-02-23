@@ -9,7 +9,14 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from LibreView import LibreView
 
-from .const import CONF_UOM, CONF_SENSOR_DURATION, DOMAIN, LOGGER, GlucoseUnitOfMeasurement, CONF_SHOW_TREND_ARROW
+from .const import (
+    CONF_SENSOR_DURATION,
+    CONF_SHOW_TREND_ARROW,
+    CONF_UOM,
+    DOMAIN,
+    LOGGER,
+    GlucoseUnitOfMeasurement,
+)
 
 
 class LibreViewOptionsFlowHandler(OptionsFlow):
@@ -51,7 +58,9 @@ class LibreViewOptionsFlowHandler(OptionsFlow):
                         GlucoseUnitOfMeasurement
                     ),
                     vol.Required(CONF_SENSOR_DURATION, default=default_duration): int,
-                    vol.Required(CONF_SHOW_TREND_ARROW, default=default_show_trend): bool
+                    vol.Required(
+                        CONF_SHOW_TREND_ARROW, default=default_show_trend
+                    ): bool,
                 }
             ),
         )
@@ -61,7 +70,9 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for LibreView."""
 
     VERSION = 1
-
+    uom: GlucoseUnitOfMeasurement
+    sensor_duration: int
+    show_trend_icon: bool
     email: str
     entry: ConfigEntry
     password: str
@@ -80,7 +91,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
                 )
                 await self.hass.async_add_executor_job(libre.get_connections)
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-exception-caught
                 LOGGER.debug("Could not log in to LibreView, %s", ex)
                 errors["base"] = "invalid_auth"
             else:
@@ -119,13 +130,15 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="options",
             data_schema=vol.Schema(
-                {vol.Required(CONF_UOM): vol.In(GlucoseUnitOfMeasurement),
-                vol.Required(CONF_SENSOR_DURATION, default=14): int,
-                vol.Required(CONF_SHOW_TREND_ARROW, default=False): bool},
+                {
+                    vol.Required(CONF_UOM): vol.In(GlucoseUnitOfMeasurement),
+                    vol.Required(CONF_SENSOR_DURATION, default=14): int,
+                    vol.Required(CONF_SHOW_TREND_ARROW, default=False): bool,
+                },
             ),
         )
 
-    async def async_step_reauth(self, data: dict[str, Any]) -> FlowResult:
+    async def async_step_reauth(self, _: dict[str, Any]) -> FlowResult:
         """Handle initiation of re-authentication with LibreView."""
         self.entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
         return await self.async_step_reauth_confirm()
@@ -143,7 +156,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
                 )
                 await self.hass.async_add_executor_job(libre.get_connections)
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-exception-caught
                 LOGGER.debug("Could not log in to LibreView, %s", ex)
                 errors["base"] = "invalid_auth"
             else:

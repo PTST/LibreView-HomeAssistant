@@ -14,6 +14,7 @@ CONF_UOM = "uom"
 CONF_SENSOR_DURATION = "sensor_duration"
 CONF_SHOW_TREND_ARROW = "show_trend_arrow"
 
+
 DEFAULT_ICON = "mdi:diabetes"
 SENSOR_ICON = "mdi:circle-double"
 TREND_ICONS = {
@@ -23,6 +24,7 @@ TREND_ICONS = {
     3: "mdi:arrow-top-right-thick",
     4: "mdi:arrow-up-thick",
 }
+
 
 class GlucoseUnitOfMeasurement(Enum):
     MMOLL = "mmol/L"
