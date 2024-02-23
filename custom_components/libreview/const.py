@@ -15,8 +15,6 @@ CONF_SENSOR_DURATION = "sensor_duration"
 CONF_SHOW_TREND_ARROW = "show_trend_arrow"
 
 
-
-
 DEFAULT_ICON = "mdi:diabetes"
 SENSOR_ICON = "mdi:circle-double"
 TREND_ICONS = {
