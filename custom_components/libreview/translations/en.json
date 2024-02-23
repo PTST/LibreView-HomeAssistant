@@ -11,9 +11,11 @@
             },
             "options": {
                 "title": "LibreView Configuration",
-                "description": "Please select your preffered unit of measurent for blood glucose measurements",
+                "description": "Set settings for the LibreView integration.",
                 "data": {
-                    "uom": "Unit"
+                    "uom": "Unit of measurement for blood glucose measurements",
+                    "sensor_duration": "How many days do your Libre Sensor stay active after application",
+                    "show_trend_arrow": "Use icon to show current trend of the glucose level"
                 }
             },
             "reauth_confirm": {
@@ -36,10 +38,12 @@
     "options": {
         "step": {
             "init": {
-                "title": "LibreView Options",
-                "description": "Please select your preffered unit of measurent for blood glucose measurements",
+                "title": "LibreView Configuration",
+                "description": "Change settings for the LibreView integration.",
                 "data": {
-                    "uom": "Unit"
+                    "uom": "Unit of measurement for blood glucose measurements",
+                    "sensor_duration": "How many days do your Libre Sensor stay active after application",
+                    "show_trend_arrow": "Use icon to show current trend of the glucose level"
                 }
             }
         }
