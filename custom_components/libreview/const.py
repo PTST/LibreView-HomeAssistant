@@ -24,6 +24,7 @@ TREND_ICONS = {
     4: "mdi:arrow-up-thick",
 }
 
+
 class GlucoseUnitOfMeasurement(Enum):
     MMOLL = "mmol/L"
     MGDL = "mg/dl"

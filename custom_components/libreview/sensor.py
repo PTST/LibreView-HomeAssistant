@@ -1,8 +1,8 @@
+import datetime
 from typing import Dict
 from uuid import UUID
-import datetime
 
-from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
@@ -10,7 +10,16 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from LibreView.models import Connection, GlucoseMeasurement, Sensor
 
-from .const import CONF_UOM, CONF_SENSOR_DURATION, DOMAIN, GlucoseUnitOfMeasurement, TREND_ICONS, DEFAULT_ICON, SENSOR_ICON, CONF_SHOW_TREND_ARROW
+from .const import (
+    CONF_SENSOR_DURATION,
+    CONF_SHOW_TREND_ARROW,
+    CONF_UOM,
+    DEFAULT_ICON,
+    DOMAIN,
+    SENSOR_ICON,
+    TREND_ICONS,
+    GlucoseUnitOfMeasurement,
+)
 from .coordinator import LibreViewCoordinator
 
 
@@ -21,16 +30,24 @@ async def async_setup_entry(
     uom = GlucoseUnitOfMeasurement(entry.data[CONF_UOM])
     sensor_duration = int(entry.data[CONF_SENSOR_DURATION])
     show_trend_arrow = bool(entry.data[CONF_SHOW_TREND_ARROW])
-    sensors: list[Entity] = [GlucoseSensor(coordinator, connection_id, uom, show_trend_arrow) for connection_id, _ in coordinator.data["glucose_readings"].items()] + [LibreSensor(coordinator, connection_id, sensor_duration) for connection_id, _ in coordinator.data["glucose_readings"].items()]
+    sensors: list[Entity] = [
+        GlucoseSensor(coordinator, connection_id, uom, show_trend_arrow)
+        for connection_id, _ in coordinator.data["glucose_readings"].items()
+    ] + [
+        LibreSensor(coordinator, connection_id, sensor_duration)
+        for connection_id, _ in coordinator.data["glucose_readings"].items()
+    ]
     async_add_entities(sensors)
+
 
 class LibreSensor(CoordinatorEntity, SensorEntity):
     _attr_device_class = SensorDeviceClass.TIMESTAMP
+
     def __init__(
         self,
         coordinator: LibreViewCoordinator,
         connection_id: UUID,
-        sensor_duration: int
+        sensor_duration: int,
     ):
         super().__init__(coordinator)
         self._attr_unique_id = f"{connection_id}_sensor_expiry"
@@ -70,6 +87,7 @@ class LibreSensor(CoordinatorEntity, SensorEntity):
             "serial_no": self.sensor.sn,
         }
 
+
 class GlucoseSensor(CoordinatorEntity, SensorEntity):
     _attr_native_unit_of_measurement: str
     _attr_state_class = "measurement"
@@ -80,7 +98,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
         coordinator: LibreViewCoordinator,
         connection_id: UUID,
         uom: GlucoseUnitOfMeasurement,
-        use_trend_icons: bool
+        use_trend_icons: bool,
     ):
         super().__init__(coordinator)
         self._attr_unique_id = f"{connection_id}_glucose_reading"
@@ -91,7 +109,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
 
     @property
     def icon(self):
-        if (self.use_trend_icons):
+        if self.use_trend_icons:
             return TREND_ICONS.get(self.trend_arrow, DEFAULT_ICON)
         return DEFAULT_ICON
 
@@ -125,6 +143,10 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> Dict[str, int | float]:
         return {
-            GlucoseUnitOfMeasurement.MMOLL.value: self.gcm.value,
-            GlucoseUnitOfMeasurement.MGDL.value: self.gcm.value_in_mg_per_dl,
+            "value_mmol_l": self.gcm.value,
+            "value_mg_dl": self.gcm.value_in_mg_per_dl,
+            "target_high_mmol_l": round(self.connection.target_high / 18, 1),
+            "target_low_mmol_l": round(self.connection.target_low / 18, 1),
+            "target_high_mg_dl": self.connection.target_high,
+            "target_low_mg_dl": self.connection.target_low,
         }
