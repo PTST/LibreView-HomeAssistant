@@ -11,9 +11,11 @@
             },
             "options": {
                 "title": "LibreView opsætning",
-                "description": "Vælg din foretrukne målenhed for blodsukkermålinger",
+                "description": "Indstillinger for LibreView integrationen",
                 "data": {
-                    "uom": "Enhed"
+                    "uom": "Måleenhed for blodsukkermålinger",
+                    "sensor_duration": "Hvor mange dage er din Libre sensor aktiv efter påsætning",
+                    "show_trend_arrow": "Brug ikon til at vise glukosetendens"
                 }
             },
             "reauth_confirm": {
@@ -37,9 +39,11 @@
         "step": {
             "init": {
                 "title": "LibreView indstillinger",
-                "description": "Vælg din foretrukne målenhed for blodsukkermålinger",
+                "description": "Indstillinger for LibreView integrationen",
                 "data": {
-                    "uom": "Enhed"
+                    "uom": "Måleenhed for blodsukkermålinger",
+                    "sensor_duration": "Hvor mange dage er din Libre sensor aktiv efter påsætning",
+                    "show_trend_arrow": "Brug ikon til at vise glukosetendens"
                 }
             }
         }

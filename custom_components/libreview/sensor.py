@@ -1,15 +1,16 @@
 from typing import Dict
 from uuid import UUID
+import datetime
 
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from LibreView.models import Connection, GlucoseMeasurement
+from LibreView.models import Connection, GlucoseMeasurement, Sensor
 
-from .const import CONF_UOM, DOMAIN, GlucoseUnitOfMeasurement
+from .const import CONF_UOM, CONF_SENSOR_DURATION, DOMAIN, GlucoseUnitOfMeasurement, TREND_ICONS, DEFAULT_ICON, SENSOR_ICON, CONF_SHOW_TREND_ARROW
 from .coordinator import LibreViewCoordinator
 
 
@@ -17,15 +18,57 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     coordinator: LibreViewCoordinator = hass.data[DOMAIN][entry.entry_id]
-    sensors: list[Entity] = [
-        GlucoseSensor(
-            coordinator, connection_id, GlucoseUnitOfMeasurement(entry.data[CONF_UOM])
-        )
-        for connection_id, _ in coordinator.data["glucose_readings"].items()
-    ]
-
+    uom = GlucoseUnitOfMeasurement(entry.data[CONF_UOM])
+    sensor_duration = int(entry.data[CONF_SENSOR_DURATION])
+    show_trend_arrow = bool(entry.data[CONF_SHOW_TREND_ARROW])
+    sensors: list[Entity] = [GlucoseSensor(coordinator, connection_id, uom, show_trend_arrow) for connection_id, _ in coordinator.data["glucose_readings"].items()] + [LibreSensor(coordinator, connection_id, sensor_duration) for connection_id, _ in coordinator.data["glucose_readings"].items()]
     async_add_entities(sensors)
 
+class LibreSensor(CoordinatorEntity, SensorEntity):
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+    def __init__(
+        self,
+        coordinator: LibreViewCoordinator,
+        connection_id: UUID,
+        sensor_duration: int
+    ):
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{connection_id}_sensor_expiry"
+        self.connection_id = connection_id
+        self.sensor_duration = sensor_duration
+
+    @property
+    def application_dt(self):
+        return datetime.datetime.fromtimestamp(self.sensor.a, datetime.timezone.utc)
+
+    @property
+    def icon(self):
+        return SENSOR_ICON
+
+    @property
+    def connection(self) -> Connection:
+        return self.coordinator.data["glucose_readings"][self.connection_id]
+
+    @property
+    def sensor(self) -> Sensor:
+        return self.connection.sensor
+
+    @property
+    def name(self) -> str:
+        """Return the name of the entity."""
+        name = f"{self.connection.first_name } {self.connection.last_name}"
+        return f"{name} sensor expiry"
+
+    @property
+    def native_value(self) -> datetime.datetime | None:
+        return self.application_dt + datetime.timedelta(days=self.sensor_duration)
+
+    @property
+    def extra_state_attributes(self) -> Dict[str, str]:
+        return {
+            "application_datetime": self.application_dt,
+            "serial_no": self.sensor.sn,
+        }
 
 class GlucoseSensor(CoordinatorEntity, SensorEntity):
     _attr_native_unit_of_measurement: str
@@ -37,17 +80,20 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
         coordinator: LibreViewCoordinator,
         connection_id: UUID,
         uom: GlucoseUnitOfMeasurement,
+        use_trend_icons: bool
     ):
         super().__init__(coordinator)
         self._attr_unique_id = f"{connection_id}_glucose_reading"
         self.connection_id = connection_id
         self.uom = uom
         self._attr_native_unit_of_measurement = self.uom.value
+        self.use_trend_icons = use_trend_icons
 
     @property
     def icon(self):
-        # trend icons?
-        return "mdi:diabetes"
+        if (self.use_trend_icons):
+            return TREND_ICONS.get(self.trend_arrow, DEFAULT_ICON)
+        return DEFAULT_ICON
 
     @property
     def connection(self) -> Connection:
@@ -58,13 +104,17 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
         return self.connection.glucose_measurement
 
     @property
+    def trend_arrow(self) -> int:
+        return self.gcm.trend_arrow
+
+    @property
     def name(self) -> str:
         """Return the name of the entity."""
         name = f"{self.connection.first_name } {self.connection.last_name}"
         return f"{name} Glucose Measurement"
 
     @property
-    def native_value(self) -> str | None:
+    def native_value(self) -> int | float | None:
         """Return the state of the entity."""
         if self.uom == GlucoseUnitOfMeasurement.MMOLL:
             return self.gcm.value

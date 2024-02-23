@@ -9,7 +9,7 @@ from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from LibreView import LibreView
 
-from .const import CONF_UOM, DOMAIN, LOGGER, GlucoseUnitOfMeasurement
+from .const import CONF_UOM, CONF_SENSOR_DURATION, DOMAIN, LOGGER, GlucoseUnitOfMeasurement, CONF_SHOW_TREND_ARROW
 
 
 class LibreViewOptionsFlowHandler(OptionsFlow):
@@ -31,17 +31,27 @@ class LibreViewOptionsFlowHandler(OptionsFlow):
             self.async_abort(reason="configuration updated")
             return self.async_create_entry(title="", data={})
 
-        default = GlucoseUnitOfMeasurement.MMOLL
+        default_uom = GlucoseUnitOfMeasurement.MMOLL
         if self.entry.data.get(CONF_UOM) is not None:
-            default = GlucoseUnitOfMeasurement(self.entry.data.get(CONF_UOM))
+            default_uom = GlucoseUnitOfMeasurement(self.entry.data.get(CONF_UOM))
+
+        default_duration = 14
+        if self.entry.data.get(CONF_SENSOR_DURATION) is not None:
+            default_duration = int(self.entry.data.get(CONF_SENSOR_DURATION))
+
+        default_show_trend = 14
+        if self.entry.data.get(CONF_SHOW_TREND_ARROW) is not None:
+            default_show_trend = bool(self.entry.data.get(CONF_SHOW_TREND_ARROW))
 
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_UOM, default=default): vol.In(
+                    vol.Required(CONF_UOM, default=default_uom): vol.In(
                         GlucoseUnitOfMeasurement
-                    )
+                    ),
+                    vol.Required(CONF_SENSOR_DURATION, default=default_duration): int,
+                    vol.Required(CONF_SHOW_TREND_ARROW, default=default_show_trend): bool
                 }
             ),
         )
@@ -94,18 +104,24 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         if user_input is not None:
             self.uom = user_input[CONF_UOM]
+            self.sensor_duration = user_input[CONF_SENSOR_DURATION]
+            self.show_trend_icon = user_input[CONF_SHOW_TREND_ARROW]
             return self.async_create_entry(
                 title="LibreView",
                 data={
                     CONF_EMAIL: self.email,
                     CONF_PASSWORD: self.password,
                     CONF_UOM: self.uom,
+                    CONF_SENSOR_DURATION: int(self.sensor_duration),
+                    CONF_SHOW_TREND_ARROW: bool(self.show_trend_icon),
                 },
             )
         return self.async_show_form(
             step_id="options",
             data_schema=vol.Schema(
-                {vol.Required(CONF_UOM): vol.In(GlucoseUnitOfMeasurement)}
+                {vol.Required(CONF_UOM): vol.In(GlucoseUnitOfMeasurement),
+                vol.Required(CONF_SENSOR_DURATION, default=14): int,
+                vol.Required(CONF_SHOW_TREND_ARROW, default=default_show_trend): bool},
             ),
         )
 
