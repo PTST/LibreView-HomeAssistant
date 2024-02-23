@@ -1,5 +1,5 @@
 from datetime import datetime, timezone, timedelta
-from typing import Dict, List
+from typing import Dict
 from uuid import UUID
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
