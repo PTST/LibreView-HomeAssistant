@@ -43,6 +43,6 @@ jobs:
       - name: Install isort
         run: pip3 install isort
       - name: Run isor
-        run: isort . --profile black
+        run: isort . --diff --check --profile black
 
             
