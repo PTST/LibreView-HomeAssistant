@@ -9,7 +9,6 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from LibreView.models import Connection, GlucoseMeasurement, Sensor
-from .coordinator import LibreViewCoordinator
 
 from .const import (
     CONF_SENSOR_DURATION,
@@ -21,6 +20,7 @@ from .const import (
     TREND_ICONS,
     GlucoseUnitOfMeasurement,
 )
+from .coordinator import LibreViewCoordinator
 
 
 async def async_setup_entry(
