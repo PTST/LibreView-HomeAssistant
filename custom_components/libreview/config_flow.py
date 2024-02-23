@@ -70,7 +70,9 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for LibreView."""
 
     VERSION = 1
-
+    uom: GlucoseUnitOfMeasurement
+    sensor_duration: int
+    show_trend_icon: bool
     email: str
     entry: ConfigEntry
     password: str
@@ -89,7 +91,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
                 )
                 await self.hass.async_add_executor_job(libre.get_connections)
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-exception-caught
                 LOGGER.debug("Could not log in to LibreView, %s", ex)
                 errors["base"] = "invalid_auth"
             else:
@@ -136,7 +138,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
             ),
         )
 
-    async def async_step_reauth(self, data: dict[str, Any]) -> FlowResult:
+    async def async_step_reauth(self, _: dict[str, Any]) -> FlowResult:
         """Handle initiation of re-authentication with LibreView."""
         self.entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
         return await self.async_step_reauth_confirm()
@@ -154,7 +156,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
                 )
                 await self.hass.async_add_executor_job(libre.get_connections)
-            except Exception as ex:
+            except Exception as ex:  # pylint: disable=broad-exception-caught
                 LOGGER.debug("Could not log in to LibreView, %s", ex)
                 errors["base"] = "invalid_auth"
             else:

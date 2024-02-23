@@ -1,5 +1,5 @@
-import datetime
-from typing import Dict
+from datetime import datetime, timezone, timedelta
+from typing import Dict, List
 from uuid import UUID
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
@@ -56,7 +56,7 @@ class LibreSensor(CoordinatorEntity, SensorEntity):
 
     @property
     def application_dt(self):
-        return datetime.datetime.fromtimestamp(self.sensor.a, datetime.timezone.utc)
+        return datetime.fromtimestamp(self.sensor.a, timezone.utc)
 
     @property
     def icon(self):
@@ -77,8 +77,8 @@ class LibreSensor(CoordinatorEntity, SensorEntity):
         return f"{name} sensor expiry"
 
     @property
-    def native_value(self) -> datetime.datetime | None:
-        return self.application_dt + datetime.timedelta(days=self.sensor_duration)
+    def native_value(self) -> datetime | None:
+        return self.application_dt + timedelta(days=self.sensor_duration)
 
     @property
     def extra_state_attributes(self) -> Dict[str, str]:
