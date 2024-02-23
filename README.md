@@ -1,11 +1,14 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/PTST/LibreView-HomeAssistant/graphs/commit-activity)
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
-<!-- [![Validated with Hassfest and HAC](https://github.com/ptst/LibreView-HomeAssistant/actions/workflows/Validate.yaml/badge.svg)](https://github.com/ptst/LibreView-HomeAssistant/actions/workflows/Validate.yaml) -->
-
+[![HACS Badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
+[![HACS Validation](https://github.com/PTST/LibreView-HomeAssistant/actions/workflows/HACS.yaml/badge.svg)](https://github.com/ptst/LibreView-HomeAssistant/actions/workflows/HACS.yaml)
+[![Hassfest Validation](https://github.com/PTST/LibreView-HomeAssistant/actions/workflows/Hassfest.yaml/badge.svg)](https://github.com/ptst/LibreView-HomeAssistant/actions/workflows/Hassfest.yaml)
 
 # LibreView Integration for Home Assistant
 
-Will add a sensor per connected person showing their last reported blood glucose levels in either mmol/L or mg/dL
+Will add a sensor per connected person showing their last reported blood glucose levels in either mmol/L or mg/dL  
+Supports Home Assistant statistics  
+![Screenshot 2024-02-23 083043](https://github.com/PTST/LibreView-HomeAssistant/assets/17211264/2112507b-bd45-4f4b-aace-f043eb0121c2)
+
 
 ## Installation
 ### HACS (Recommended)
