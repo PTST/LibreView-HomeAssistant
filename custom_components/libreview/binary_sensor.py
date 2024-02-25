@@ -120,7 +120,7 @@ class GlucoseLowSensor(CoordinatorEntity, BinarySensorEntity):
     @property
     def is_on(self) -> bool:
         """Return the state of the entity."""
-        return self.gcm.value_in_mg_per_dl > self.connection.target_low
+        return self.gcm.value_in_mg_per_dl < self.connection.target_low
 
     @property
     def extra_state_attributes(self) -> Dict[str, int | float]:
