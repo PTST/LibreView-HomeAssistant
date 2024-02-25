@@ -18,11 +18,11 @@ CONF_SHOW_TREND_ARROW = "show_trend_arrow"
 DEFAULT_ICON = "mdi:diabetes"
 SENSOR_ICON = "mdi:circle-double"
 TREND_ICONS = {
-    0: "mdi:arrow-down-thick",
-    1: "mdi:arrow-bottom-right-thick",
-    2: "mdi:arrow-right-thick",
-    3: "mdi:arrow-top-right-thick",
-    4: "mdi:arrow-up-thick",
+    1: "mdi:arrow-down-thick",
+    2: "mdi:arrow-bottom-right-thick",
+    3: "mdi:arrow-right-thick",
+    4: "mdi:arrow-top-right-thick",
+    5: "mdi:arrow-up-thick",
 }
 
 

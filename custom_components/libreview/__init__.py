@@ -1,4 +1,5 @@
 import homeassistant.helpers.config_validation as cv
+from homeassistant.components.binary_sensor import DOMAIN as BINARY_SENSOR_DOMAIN
 from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -8,6 +9,7 @@ from .coordinator import LibreViewCoordinator
 
 PLATFORMS = [
     SENSOR_DOMAIN,
+    BINARY_SENSOR_DOMAIN,
 ]
 
 CONFIG_SCHEMA = cv.deprecated(DOMAIN)

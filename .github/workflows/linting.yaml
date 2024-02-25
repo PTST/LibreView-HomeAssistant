@@ -32,4 +32,17 @@ jobs:
       - name: Run pylint
         run: pylint custom_components/libreview/
 
+  imports-sorted:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install isort
+        run: pip3 install isort
+      - name: Run isor
+        run: isort . --diff --check --profile black
+
             
