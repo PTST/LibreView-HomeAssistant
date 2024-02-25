@@ -8,12 +8,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from LibreView.models import Connection, GlucoseMeasurement
 
-from .const import (
-    CONF_UOM,
-    DEFAULT_ICON,
-    DOMAIN,
-    GlucoseUnitOfMeasurement,
-)
+from .const import CONF_UOM, DEFAULT_ICON, DOMAIN, GlucoseUnitOfMeasurement
 from .coordinator import LibreViewCoordinator
 
 
