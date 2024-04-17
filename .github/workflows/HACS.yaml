@@ -20,4 +20,3 @@ jobs:
         uses: "hacs/action@main"
         with:
           category: "integration"
-          ignore: "brands" #Waiting for PR https://github.com/home-assistant/brands/pull/5233
