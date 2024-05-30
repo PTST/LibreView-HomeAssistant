@@ -10,6 +10,7 @@ from homeassistant.data_entry_flow import FlowResult
 from LibreView import LibreView
 
 from .const import (
+    CONF_REGION,
     CONF_SENSOR_DURATION,
     CONF_SHOW_TREND_ARROW,
     CONF_UOM,
@@ -29,9 +30,9 @@ class LibreViewOptionsFlowHandler(OptionsFlow):
     ) -> FlowResult:
         """Manage the options."""
         if user_input is not None:
-            for k, v in self.entry.data.items():
-                if k not in user_input.keys():
-                    user_input[k] = v
+            for key, value in self.entry.data.items():
+                if key not in user_input.keys():
+                    user_input[key] = value
             self.hass.config_entries.async_update_entry(
                 self.entry, data=user_input, options=self.entry.options
             )
@@ -50,6 +51,10 @@ class LibreViewOptionsFlowHandler(OptionsFlow):
         if self.entry.data.get(CONF_SHOW_TREND_ARROW) is not None:
             default_show_trend = bool(self.entry.data.get(CONF_SHOW_TREND_ARROW))
 
+        default_region = "Standard"
+        if self.entry.data.get(CONF_REGION) is not None:
+            default_region = self.entry.data.get(CONF_REGION)
+
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
@@ -61,6 +66,21 @@ class LibreViewOptionsFlowHandler(OptionsFlow):
                     vol.Required(
                         CONF_SHOW_TREND_ARROW, default=default_show_trend
                     ): bool,
+                    vol.Optional(CONF_REGION, default=default_region): vol.In(
+                        [
+                            "Standard",
+                            "AE",
+                            "AP",
+                            "AU",
+                            "CA",
+                            "DE",
+                            "EU",
+                            "EU2",
+                            "FR",
+                            "JP",
+                            "US",
+                        ]
+                    ),
                 }
             ),
         )
@@ -77,6 +97,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     entry: ConfigEntry
     password: str
     connections: Dict[str, str]
+    region: str
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -91,7 +112,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
                 )
                 await self.hass.async_add_executor_job(libre.get_connections)
-            except Exception as ex:  # pylint: disable=broad-exception-caught
+            except Exception as ex:  # pylint: disable=broad-except
                 LOGGER.debug("Could not log in to LibreView, %s", ex)
                 errors["base"] = "invalid_auth"
             else:
@@ -117,6 +138,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
             self.uom = user_input[CONF_UOM]
             self.sensor_duration = user_input[CONF_SENSOR_DURATION]
             self.show_trend_icon = user_input[CONF_SHOW_TREND_ARROW]
+            self.region = user_input[CONF_REGION]
             return self.async_create_entry(
                 title="LibreView",
                 data={
@@ -125,6 +147,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     CONF_UOM: self.uom,
                     CONF_SENSOR_DURATION: int(self.sensor_duration),
                     CONF_SHOW_TREND_ARROW: bool(self.show_trend_icon),
+                    CONF_REGION: self.region,
                 },
             )
         return self.async_show_form(
@@ -134,6 +157,21 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_UOM): vol.In(GlucoseUnitOfMeasurement),
                     vol.Required(CONF_SENSOR_DURATION, default=14): int,
                     vol.Required(CONF_SHOW_TREND_ARROW, default=False): bool,
+                    vol.Optional(CONF_REGION, default="Standard"): vol.In(
+                        [
+                            "Standard",
+                            "AE",
+                            "AP",
+                            "AU",
+                            "CA",
+                            "DE",
+                            "EU",
+                            "EU2",
+                            "FR",
+                            "JP",
+                            "US",
+                        ]
+                    ),
                 },
             ),
         )
@@ -156,7 +194,7 @@ class LibreViewConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                     username=user_input[CONF_EMAIL], password=user_input[CONF_PASSWORD]
                 )
                 await self.hass.async_add_executor_job(libre.get_connections)
-            except Exception as ex:  # pylint: disable=broad-exception-caught
+            except Exception as ex:  # pylint: disable=broad-except
                 LOGGER.debug("Could not log in to LibreView, %s", ex)
                 errors["base"] = "invalid_auth"
             else:

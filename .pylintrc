@@ -3,5 +3,5 @@ ignored-modules=voluptuous,homeassistant,LibreView
 disable=missing-docstring,too-few-public-methods
 
 [SIMILARITIES]
-min-similarity-lines = 8
+min-similarity-lines = 25
 ignore-imports = true

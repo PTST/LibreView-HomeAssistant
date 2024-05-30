@@ -15,7 +15,8 @@
                 "data": {
                     "uom": "Unit of measurement for blood glucose measurements",
                     "sensor_duration": "How many days do your Libre Sensor stay active after application",
-                    "show_trend_arrow": "Use icon to show current trend of the glucose level"
+                    "show_trend_arrow": "Use icon to show current trend of the glucose level",
+                    "region": "Region of the api server to use, leave at standard to auto guess"
                 }
             },
             "reauth_confirm": {
@@ -43,7 +44,8 @@
                 "data": {
                     "uom": "Unit of measurement for blood glucose measurements",
                     "sensor_duration": "How many days do your Libre Sensor stay active after application",
-                    "show_trend_arrow": "Use icon to show current trend of the glucose level"
+                    "show_trend_arrow": "Use icon to show current trend of the glucose level",
+                    "region": "Region of the api server to use, leave at standard to auto guess"
                 }
             }
         }

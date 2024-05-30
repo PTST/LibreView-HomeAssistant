@@ -7,6 +7,6 @@
     "documentation": "https://github.com/PTST/LibreView-HomeAssistant",
     "iot_class": "cloud_polling",
     "issue_tracker": "https://github.com/PTST/LibreView-HomeAssistant/issues",
-    "requirements": ["LibreView==0.1.2"],
+    "requirements": ["LibreView==0.1.9"],
     "version": "1.0.0"
 }
