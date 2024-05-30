@@ -13,6 +13,7 @@ DEFAULT_SCAN_INTERVAL = timedelta(minutes=1)
 CONF_UOM = "uom"
 CONF_SENSOR_DURATION = "sensor_duration"
 CONF_SHOW_TREND_ARROW = "show_trend_arrow"
+CONF_REGION = "region"
 
 
 DEFAULT_ICON = "mdi:diabetes"

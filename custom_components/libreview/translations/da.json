@@ -15,7 +15,8 @@
                 "data": {
                     "uom": "Måleenhed for blodsukkermålinger",
                     "sensor_duration": "Hvor mange dage er din Libre sensor aktiv efter påsætning",
-                    "show_trend_arrow": "Brug ikon til at vise glukosetendens"
+                    "show_trend_arrow": "Brug ikon til at vise glukosetendens",
+                    "region": "Region for API serveren, hvis sat til Standard auto findes denne"
                 }
             },
             "reauth_confirm": {
@@ -43,7 +44,8 @@
                 "data": {
                     "uom": "Måleenhed for blodsukkermålinger",
                     "sensor_duration": "Hvor mange dage er din Libre sensor aktiv efter påsætning",
-                    "show_trend_arrow": "Brug ikon til at vise glukosetendens"
+                    "show_trend_arrow": "Brug ikon til at vise glukosetendens",
+                    "region": "Region for API serveren, hvis sat til Standard auto findes denne"
                 }
             }
         }
