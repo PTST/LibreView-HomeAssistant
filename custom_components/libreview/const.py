@@ -25,7 +25,13 @@ TREND_ICONS = {
     4: "mdi:arrow-top-right-thick",
     5: "mdi:arrow-up-thick",
 }
-
+TREND_MESSAGE = {
+    1: "decreasing_fast",
+    2: "decreasing",
+    3: "stable",
+    4: "increasing",
+    5: "increasing_fast",
+}
 
 class GlucoseUnitOfMeasurement(Enum):
     MMOLL = "mmol/L"
