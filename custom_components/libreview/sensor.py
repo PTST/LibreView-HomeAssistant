@@ -18,6 +18,7 @@ from .const import (
     DOMAIN,
     SENSOR_ICON,
     TREND_ICONS,
+    TREND_MESSAGE,
     GlucoseUnitOfMeasurement,
 )
 from .coordinator import LibreViewCoordinator
@@ -150,5 +151,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
             "target_high_mg_dl": self.connection.target_high,
             "target_low_mg_dl": self.connection.target_low,
             "trend": TREND_MESSAGE.get(self.trend_arrow, "unknown"),
-            "measurement_timestamp": self.gcm.factory_timestamp.replace(tzinfo=UTC),
+            "measurement_timestamp": self.gcm.factory_timestamp.replace(
+                tzinfo=timezone.utc
+            ),
         }
