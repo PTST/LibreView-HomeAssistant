@@ -147,7 +147,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> Dict[str, int | float]:
         return {
-            "value_mmol_l": self.get_mmol_l_value
+            "value_mmol_l": self.get_mmol_l_value,
             "value_mg_dl": self.gcm.value_in_mg_per_dl,
             "target_high_mmol_l": round(self.connection.target_high / 18, 1),
             "target_low_mmol_l": round(self.connection.target_low / 18, 1),
