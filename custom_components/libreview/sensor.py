@@ -144,7 +144,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
     @property
     def get_mmol_l_value(self) -> float:
         if self.app_uom == 1:
-            return self.gcm_value_in_mg_per_dl / 18.0
+            return self.gcm.value_in_mg_per_dl / 18.0
         return self.gcm.value
 
     @property
