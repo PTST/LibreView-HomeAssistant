@@ -136,21 +136,32 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
     def native_value(self) -> int | float | None:
         """Return the state of the entity."""
         if self.uom == GlucoseUnitOfMeasurement.MMOLL:
-            return self.gcm.value
+            return self.get_mmol_l_value
         if self.uom == GlucoseUnitOfMeasurement.MGDL:
             return self.gcm.value_in_mg_per_dl
         return None
 
     @property
+    def get_mmol_l_value(self) -> float:
+        if self.app_uom == 1:
+            return self.gcm_value_in_mg_per_dl / 18.0
+        return self.gcm.value
+
+    @property
+    def app_uom(self) -> int:
+        return self.connection.uom
+
+    @property
     def extra_state_attributes(self) -> Dict[str, int | float]:
         return {
-            "value_mmol_l": self.gcm.value,
+            "value_mmol_l": self.get_mmol_l_value,
             "value_mg_dl": self.gcm.value_in_mg_per_dl,
             "target_high_mmol_l": round(self.connection.target_high / 18, 1),
             "target_low_mmol_l": round(self.connection.target_low / 18, 1),
             "target_high_mg_dl": self.connection.target_high,
             "target_low_mg_dl": self.connection.target_low,
             "trend": TREND_MESSAGE.get(self.trend_arrow, "unknown"),
+            "app_unit_of_measurement": "mmol/L" if self.app_uom == 0 else "mg/dL",
             "measurement_timestamp": self.gcm.factory_timestamp.replace(
                 tzinfo=timezone.utc
             ),
