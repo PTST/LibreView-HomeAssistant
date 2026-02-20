@@ -136,15 +136,18 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
     def native_value(self) -> int | float | None:
         """Return the state of the entity."""
         if self.uom == GlucoseUnitOfMeasurement.MMOLL:
-            return self.gcm.value
+            return self.get_mmol_l_value
         if self.uom == GlucoseUnitOfMeasurement.MGDL:
             return self.gcm.value_in_mg_per_dl
         return None
 
+    def get_mmol_l_value(self) -> float:
+        return self.gcm_value_in_mg_per_dl / 18.0
+
     @property
     def extra_state_attributes(self) -> Dict[str, int | float]:
         return {
-            "value_mmol_l": self.gcm.value,
+            "value_mmol_l": self.get_mmol_l_value
             "value_mg_dl": self.gcm.value_in_mg_per_dl,
             "target_high_mmol_l": round(self.connection.target_high / 18, 1),
             "target_low_mmol_l": round(self.connection.target_low / 18, 1),
