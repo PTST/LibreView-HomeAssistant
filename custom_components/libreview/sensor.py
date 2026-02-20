@@ -161,7 +161,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
             "target_high_mg_dl": self.connection.target_high,
             "target_low_mg_dl": self.connection.target_low,
             "trend": TREND_MESSAGE.get(self.trend_arrow, "unknown"),
-            "app_unit_of_measurement": "mmol/L" if self.app_uom == 0 else "mg/dL" 
+            "app_unit_of_measurement": "mmol/L" if self.app_uom == 0 else "mg/dL",
             "measurement_timestamp": self.gcm.factory_timestamp.replace(
                 tzinfo=timezone.utc
             ),
