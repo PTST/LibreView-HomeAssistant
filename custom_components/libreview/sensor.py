@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import Dict
+from typing import Any, Dict, Optional
 from uuid import UUID
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
@@ -82,10 +82,10 @@ class LibreSensor(CoordinatorEntity, SensorEntity):
         return self.application_dt + timedelta(days=self.sensor_duration)
 
     @property
-    def extra_state_attributes(self) -> Dict[str, str]:
+    def extra_state_attributes(self) -> dict[str, Any]:
         return {
             "application_datetime": self.application_dt,
-            "serial_no": self.sensor.sn,
+            "serial_no": f"{self.sensor.pt}{self.sensor.sn}",
         }
 
 
@@ -123,7 +123,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
         return self.connection.glucose_measurement
 
     @property
-    def trend_arrow(self) -> int:
+    def trend_arrow(self) -> Optional[int]:
         return self.gcm.trend_arrow
 
     @property
@@ -152,7 +152,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
         return self.connection.uom
 
     @property
-    def extra_state_attributes(self) -> Dict[str, int | float]:
+    def extra_state_attributes(self) -> Dict[str, Any]:
         return {
             "value_mmol_l": self.get_mmol_l_value,
             "value_mg_dl": self.gcm.value_in_mg_per_dl,

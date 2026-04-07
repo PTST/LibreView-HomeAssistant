@@ -1,3 +1,5 @@
+from typing import Any
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
@@ -24,7 +26,7 @@ class LibreViewCoordinator(DataUpdateCoordinator):
             hass, LOGGER, name=DOMAIN, update_interval=DEFAULT_SCAN_INTERVAL
         )
 
-    async def _async_update_data(self) -> dict:
+    async def _async_update_data(self) -> dict[str, Any]:
         try:
             LOGGER.debug("Updating data")
             await self.hass.async_add_executor_job(self.libre.get_connections)
@@ -34,7 +36,7 @@ class LibreViewCoordinator(DataUpdateCoordinator):
 
         # Store data in a way Home Assistant can easily consume it
         LOGGER.debug(self.libre.connections_dict)
-        data = {
+        data: dict[str, Any] = {
             "glucose_readings": self.libre.connections_dict,
         }
         return data
