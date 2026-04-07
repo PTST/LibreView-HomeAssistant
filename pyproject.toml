@@ -1,0 +1,16 @@
+[project]
+name = "libreview-homeassistant"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "libreview>=0.3.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.3.1",
+    "homeassistant>=2025.4.4",
+    "isort>=8.0.1",
+]
