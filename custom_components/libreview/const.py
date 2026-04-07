@@ -36,4 +36,4 @@ TREND_MESSAGE = {
 
 class GlucoseUnitOfMeasurement(Enum):
     MMOLL = "mmol/L"
-    MGDL = "mg/dl"
+    MGDL = "mg/dL"
