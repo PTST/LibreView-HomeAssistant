@@ -41,7 +41,9 @@ class LibreViewOptionsFlowHandler(OptionsFlow):
 
         default_uom = GlucoseUnitOfMeasurement.MMOLL
         if self.entry.data.get(CONF_UOM) is not None:
-            default_uom = GlucoseUnitOfMeasurement.from_str(self.entry.data.get(CONF_UOM))
+            default_uom = GlucoseUnitOfMeasurement.from_str(
+                self.entry.data.get(CONF_UOM)
+            )
 
         default_duration = 14
         if self.entry.data.get(CONF_SENSOR_DURATION) is not None:
