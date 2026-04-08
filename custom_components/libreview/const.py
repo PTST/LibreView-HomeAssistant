@@ -36,4 +36,12 @@ TREND_MESSAGE = {
 
 class GlucoseUnitOfMeasurement(Enum):
     MMOLL = "mmol/L"
-    MGDL = "mg/dL"
+    MGDL = "mg/dl"
+
+    @classmethod
+    def from_str(cls, value):
+        normalized_input = value.lower()
+        for item in cls:
+            if item.value.lower() == normalized_input:
+                return item
+        raise ValueError(f"{value} is not a valid {cls.__name__}")
