@@ -28,7 +28,7 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     coordinator: LibreViewCoordinator = hass.data[DOMAIN][entry.entry_id]
-    uom = GlucoseUnitOfMeasurement(entry.data[CONF_UOM])
+    uom = GlucoseUnitOfMeasurement.from_str(entry.data[CONF_UOM])
     sensor_duration = int(entry.data[CONF_SENSOR_DURATION])
     show_trend_arrow = bool(entry.data[CONF_SHOW_TREND_ARROW])
     sensors: list[Entity] = [

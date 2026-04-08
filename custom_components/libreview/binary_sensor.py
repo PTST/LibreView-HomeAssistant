@@ -18,7 +18,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     coordinator: LibreViewCoordinator = hass.data[DOMAIN][entry.entry_id]
-    uom = GlucoseUnitOfMeasurement(entry.data[CONF_UOM])
+    uom = GlucoseUnitOfMeasurement.from_str(entry.data[CONF_UOM])
 
     sensors = [
         GlucoseHighSensor(coordinator, connection_id, uom)
