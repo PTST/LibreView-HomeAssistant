@@ -14,6 +14,13 @@ CONF_UOM = "uom"
 CONF_SENSOR_DURATION = "sensor_duration"
 CONF_SHOW_TREND_ARROW = "show_trend_arrow"
 CONF_REGION = "region"
+CONF_MAX_DATA_AGE = "max_data_age"
+
+# Maximum age (in minutes) a glucose reading is allowed to have before the
+# glucose sensor entity is reported as unavailable. 0 disables the check, so
+# existing installations keep their current behaviour (always available)
+# until they explicitly opt in via the options flow.
+DEFAULT_MAX_DATA_AGE = 0
 
 
 DEFAULT_ICON = "mdi:diabetes"

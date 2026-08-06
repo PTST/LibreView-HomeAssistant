@@ -15,6 +15,7 @@
                 "data": {
                     "uom": "Unit of measurement for blood glucose measurements",
                     "sensor_duration": "How many days do your Libre Sensor stay active after application",
+                    "max_data_age": "Maximum age (in minutes) of a glucose reading before the sensor is reported as unavailable. Set to 0 to disable",
                     "show_trend_arrow": "Use icon to show current trend of the glucose level",
                     "region": "Region of the api server to use, leave at standard to auto guess"
                 }
@@ -44,6 +45,7 @@
                 "data": {
                     "uom": "Unit of measurement for blood glucose measurements",
                     "sensor_duration": "How many days do your Libre Sensor stay active after application",
+                    "max_data_age": "Maximum age (in minutes) of a glucose reading before the sensor is reported as unavailable. Set to 0 to disable",
                     "show_trend_arrow": "Use icon to show current trend of the glucose level",
                     "region": "Region of the api server to use, leave at standard to auto guess"
                 }

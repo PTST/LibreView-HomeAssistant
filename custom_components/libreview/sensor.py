@@ -11,11 +11,14 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from LibreView.models import Connection, GlucoseMeasurement, Sensor
 
 from .const import (
+    CONF_MAX_DATA_AGE,
     CONF_SENSOR_DURATION,
     CONF_SHOW_TREND_ARROW,
     CONF_UOM,
     DEFAULT_ICON,
+    DEFAULT_MAX_DATA_AGE,
     DOMAIN,
+    LOGGER,
     SENSOR_ICON,
     TREND_ICONS,
     TREND_MESSAGE,
@@ -31,8 +34,11 @@ async def async_setup_entry(
     uom = GlucoseUnitOfMeasurement.from_str(entry.data[CONF_UOM])
     sensor_duration = int(entry.data[CONF_SENSOR_DURATION])
     show_trend_arrow = bool(entry.data[CONF_SHOW_TREND_ARROW])
+    # .get() with a default: entries created before this option existed
+    # won't have this key until the user re-saves the options flow.
+    max_data_age = int(entry.data.get(CONF_MAX_DATA_AGE, DEFAULT_MAX_DATA_AGE))
     sensors: list[Entity] = [
-        GlucoseSensor(coordinator, connection_id, uom, show_trend_arrow)
+        GlucoseSensor(coordinator, connection_id, uom, show_trend_arrow, max_data_age)
         for connection_id, _ in coordinator.data["glucose_readings"].items()
     ] + [
         LibreSensor(coordinator, connection_id, sensor_duration)
@@ -100,6 +106,7 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
         connection_id: UUID,
         uom: GlucoseUnitOfMeasurement,
         use_trend_icons: bool,
+        max_data_age: int = DEFAULT_MAX_DATA_AGE,
     ):
         super().__init__(coordinator)
         self._attr_unique_id = f"{connection_id}_glucose_reading"
@@ -107,12 +114,54 @@ class GlucoseSensor(CoordinatorEntity, SensorEntity):
         self.uom = uom
         self._attr_native_unit_of_measurement = self.uom.value
         self.use_trend_icons = use_trend_icons
+        # Max age (minutes) a reading may have before we report unavailable.
+        # 0 disables the check entirely.
+        self.max_data_age = max_data_age
 
     @property
     def icon(self):
         if self.use_trend_icons:
             return TREND_ICONS.get(self.trend_arrow, DEFAULT_ICON)
         return DEFAULT_ICON
+
+    @property
+    def available(self) -> bool:
+        """Return False if the coordinator has no data or the latest
+        glucose reading is older than the configured max age.
+
+        The LibreView API always returns the most recent known reading,
+        even when the CGM sensor has been disconnected for hours, so we
+        have to determine staleness ourselves from the reading's own
+        timestamp (see issue #53).
+        """
+        if not super().available:
+            return False
+        if not self.max_data_age:
+            # Staleness detection disabled (default): preserve the
+            # pre-existing behaviour of always reporting available.
+            return True
+
+        measurement_dt = self._measurement_timestamp
+        if measurement_dt is None:
+            # Missing/malformed timestamp: fail open rather than crash or
+            # hide a possibly-valid reading over a data-quality issue we
+            # can't fully diagnose here.
+            return True
+
+        return (datetime.now(timezone.utc) - measurement_dt) <= timedelta(
+            minutes=self.max_data_age
+        )
+
+    @property
+    def _measurement_timestamp(self) -> Optional[datetime]:
+        """Return the glucose measurement timestamp as a tz-aware UTC
+        datetime, or None if it is missing/unparsable.
+        """
+        try:
+            return self.gcm.factory_timestamp.replace(tzinfo=timezone.utc)
+        except (AttributeError, TypeError, ValueError, IndexError) as ex:
+            LOGGER.debug("Could not determine glucose measurement age: %s", ex)
+            return None
 
     @property
     def connection(self) -> Connection:
