@@ -14,6 +14,16 @@ CONF_UOM = "uom"
 CONF_SENSOR_DURATION = "sensor_duration"
 CONF_SHOW_TREND_ARROW = "show_trend_arrow"
 CONF_REGION = "region"
+CONF_MAX_DATA_AGE = "max_data_age"
+CONF_EXPIRY_WARNING_HOURS = "expiry_warning_hours"
+
+# Maximum age in minutes before a glucose reading is considered stale.
+# Set to 0 to disable stale-data detection.
+DEFAULT_MAX_DATA_AGE = 0
+
+# Number of hours before sensor expiry to report an "Expiring Soon" status.
+# Set to 0 to disable the expiry warning.
+DEFAULT_EXPIRY_WARNING_HOURS = 24
 
 
 DEFAULT_ICON = "mdi:diabetes"

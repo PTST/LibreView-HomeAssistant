@@ -11,10 +11,14 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from LibreView.models import Connection, GlucoseMeasurement, Sensor
 
 from .const import (
+    CONF_EXPIRY_WARNING_HOURS,
+    CONF_MAX_DATA_AGE,
     CONF_SENSOR_DURATION,
     CONF_SHOW_TREND_ARROW,
     CONF_UOM,
+    DEFAULT_EXPIRY_WARNING_HOURS,
     DEFAULT_ICON,
+    DEFAULT_MAX_DATA_AGE,
     DOMAIN,
     SENSOR_ICON,
     TREND_ICONS,
@@ -22,6 +26,7 @@ from .const import (
     GlucoseUnitOfMeasurement,
 )
 from .coordinator import LibreViewCoordinator
+from .status import SensorStatusConfig, derive_sensor_status
 
 
 async def async_setup_entry(
@@ -30,14 +35,31 @@ async def async_setup_entry(
     coordinator: LibreViewCoordinator = hass.data[DOMAIN][entry.entry_id]
     uom = GlucoseUnitOfMeasurement.from_str(entry.data[CONF_UOM])
     sensor_duration = int(entry.data[CONF_SENSOR_DURATION])
+    max_data_age = int(entry.data.get(CONF_MAX_DATA_AGE, DEFAULT_MAX_DATA_AGE))
+    expiry_warning_hours = int(
+        entry.data.get(CONF_EXPIRY_WARNING_HOURS, DEFAULT_EXPIRY_WARNING_HOURS)
+    )
     show_trend_arrow = bool(entry.data[CONF_SHOW_TREND_ARROW])
-    sensors: list[Entity] = [
-        GlucoseSensor(coordinator, connection_id, uom, show_trend_arrow)
-        for connection_id, _ in coordinator.data["glucose_readings"].items()
-    ] + [
-        LibreSensor(coordinator, connection_id, sensor_duration)
-        for connection_id, _ in coordinator.data["glucose_readings"].items()
-    ]
+    sensors: list[Entity] = (
+        [
+            GlucoseSensor(coordinator, connection_id, uom, show_trend_arrow)
+            for connection_id, _ in coordinator.data["glucose_readings"].items()
+        ]
+        + [
+            LibreSensor(coordinator, connection_id, sensor_duration)
+            for connection_id, _ in coordinator.data["glucose_readings"].items()
+        ]
+        + [
+            LibreSensorStatus(
+                coordinator,
+                connection_id,
+                sensor_duration,
+                max_data_age,
+                expiry_warning_hours,
+            )
+            for connection_id, _ in coordinator.data["glucose_readings"].items()
+        ]
+    )
     async_add_entities(sensors)
 
 
@@ -87,6 +109,112 @@ class LibreSensor(CoordinatorEntity, SensorEntity):
             "application_datetime": self.application_dt,
             "serial_no": f"{self.sensor.pt}{self.sensor.sn}",
         }
+
+
+class LibreSensorStatus(CoordinatorEntity, SensorEntity):
+    """Represent a derived Libre sensor status."""
+
+    _attr_icon = "mdi:list-status"
+
+    def __init__(
+        self,
+        coordinator: LibreViewCoordinator,
+        connection_id: UUID,
+        sensor_duration: int,
+        max_data_age: int,
+        expiry_warning_hours: int,
+    ):
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{connection_id}_sensor_status"
+        self.connection_id = connection_id
+        self.sensor_duration = sensor_duration
+        self.max_data_age = max_data_age
+        self.expiry_warning_hours = expiry_warning_hours
+
+    @property
+    def connection(self) -> Connection:
+        return self.coordinator.data["glucose_readings"][self.connection_id]
+
+    @property
+    def sensor(self) -> Optional[Sensor]:
+        return getattr(self.connection, "sensor", None)
+
+    @property
+    def name(self) -> str:
+        """Return the name of the entity."""
+        name = f"{self.connection.first_name } {self.connection.last_name}"
+        return f"{name} sensor status"
+
+    @property
+    def application_dt(self) -> Optional[datetime]:
+        """Return the sensor application timestamp in UTC."""
+        try:
+            application_timestamp = int(self.sensor.a)
+            if application_timestamp <= 0:
+                return None
+            return datetime.fromtimestamp(application_timestamp, timezone.utc)
+        except (AttributeError, TypeError, ValueError, OSError, OverflowError):
+            return None
+
+    @property
+    def expiry_dt(self) -> Optional[datetime]:
+        """Return the configured sensor expiry timestamp."""
+        if self.application_dt is None:
+            return None
+        return self.application_dt + timedelta(days=self.sensor_duration)
+
+    @property
+    def measurement_dt(self) -> Optional[datetime]:
+        """Return the latest glucose measurement timestamp in UTC."""
+        measurement = getattr(self.connection, "glucose_measurement", None)
+        if measurement is None:
+            return None
+
+        try:
+            return measurement.factory_timestamp.replace(tzinfo=timezone.utc)
+        except (AttributeError, TypeError, ValueError, IndexError):
+            return None
+
+    @property
+    def native_value(self) -> str:
+        """Return the derived current sensor status."""
+        measurement = getattr(self.connection, "glucose_measurement", None)
+        return derive_sensor_status(
+            now=datetime.now(timezone.utc),
+            expiry_dt=self.expiry_dt,
+            measurement_available=measurement is not None,
+            measurement_dt=self.measurement_dt,
+            config=SensorStatusConfig(
+                max_data_age=self.max_data_age,
+                expiry_warning_hours=self.expiry_warning_hours,
+            ),
+        )
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return diagnostic details used to derive the status."""
+        attributes: dict[str, Any] = {
+            "connection_status": getattr(self.connection, "status", None),
+            "stale_after_minutes": self.max_data_age,
+            "stale_detection_enabled": self.max_data_age > 0,
+            "expiry_warning_hours": self.expiry_warning_hours,
+            "expiry_warning_enabled": self.expiry_warning_hours > 0,
+        }
+
+        if self.application_dt is not None:
+            attributes["sensor_started"] = self.application_dt
+        if self.expiry_dt is not None:
+            now = datetime.now(timezone.utc)
+            attributes["sensor_expires"] = self.expiry_dt
+            expires_in_seconds = max(0.0, (self.expiry_dt - now).total_seconds())
+            attributes["expires_in_hours"] = round(expires_in_seconds / 3600, 1)
+        if self.measurement_dt is not None:
+            now = datetime.now(timezone.utc)
+            age_seconds = max(0.0, (now - self.measurement_dt).total_seconds())
+            attributes["last_measurement"] = self.measurement_dt
+            attributes["measurement_age_minutes"] = round(age_seconds / 60, 1)
+
+        return attributes
 
 
 class GlucoseSensor(CoordinatorEntity, SensorEntity):
