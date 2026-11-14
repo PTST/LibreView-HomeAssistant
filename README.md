@@ -85,3 +85,14 @@ Then proceed to Home Assistant for the setup of the integration there.
 
 8. You now have a new sensor for each person who shares their glucose measurements with you.  
 ![IMG_0651](https://github.com/PTST/LibreView-HomeAssistant/assets/17211264/b7dcfcf5-0c62-4027-a9a9-07f04624a540)
+
+## Dashboard card
+
+To show the reading on a dashboard, [SugarTV Card](https://github.com/wiltodelta/homeassistant-sugartv-card) (HACS) works with this integration out of the box. Point it at the glucose sensor, and it picks up the trend from the sensor's `trend` attribute:
+
+```yaml
+type: custom:sugartv-card
+glucose_value: sensor.jane_doe_glucose_level
+```
+
+![SugarTV Card in a wide and a tall dashboard slot](https://raw.githubusercontent.com/wiltodelta/homeassistant-sugartv-card/v0.17.1/sugartv-card-layouts.png)
